@@ -18,6 +18,23 @@
 
 已完成 APK 编译和静态检查，以及目录解析、搜索、缓存数据序列化等核心数据逻辑检查。已在 OPPO PKV110 上验证 MP3/HLS 直播、连续 3 次暂停后恢复播放，以及一次全量目录加载（69,408 台，其中中国 2,441 台；数量为测试时快照，包含失效标记）；锁屏控制、长时间后台运行和不同厂商策略仍需进一步验证。
 
+## 界面展示
+
+以下为 v0.1.5 在 OPPO PKV110 上的实机截图。电台名称、目录数量和播放状态为截图时的数据；国家或地区近似位置不代表发射台地址。
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/globe.png" width="240" alt="地球与直播"><br>地球与直播</td>
+    <td align="center"><img src="docs/screenshots/nebula.png" width="240" alt="流派星云"><br>流派星云</td>
+    <td align="center"><img src="docs/screenshots/countries.png" width="240" alt="国家与地区"><br>国家与地区</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/filters.png" width="240" alt="流派与音质筛选"><br>流派与音质筛选</td>
+    <td align="center"><img src="docs/screenshots/channels.png" width="240" alt="大尺寸频道列表"><br>大尺寸频道列表</td>
+    <td align="center"><img src="docs/screenshots/sleep-timer.png" width="240" alt="睡眠定时"><br>睡眠定时</td>
+  </tr>
+</table>
+
 ## 功能
 
 - **随机探索**：从当前列表随机选择电台，换台时尽量避免重复当前电台。
