@@ -1,0 +1,19 @@
+# Local Android / IDE configuration
+local.properties
+.gradle/
+.idea/
+*.iml
+.DS_Store
+
+# Generated builds and packages
+**/build/
+*.apk
+*.aab
+*.apks
+*.log
+
+# Signing material
+*.jks
+*.keystore
+keystore.properties
+signing.properties
