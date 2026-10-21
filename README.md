@@ -1,5 +1,7 @@
 # 漫听 · Wander Radio
 
+[简体中文](README.md) | [English](README.en.md)
+
 > 把下一站，交给声音。
 
 漫听是一款使用 Java 开发的原生 Android 网络电台客户端。通过可交互的地球视图、流派星云和随机换台，探索来自不同国家与地区的实时广播。
