@@ -278,9 +278,11 @@ java -cp "$TEST_CLASSPATH" com.wanderadio.app.CoreTest /absolute/path/to/catalog
 - [RoamDial](https://roamdial.com/)：随机收听和空间探索的交互灵感。
 - 各电台及其运营者：提供实时广播服务。
 
+## Acknowledgements
+
+Thanks to the [LINUX DO](https://linux.do/) community for its support.
+
 ## 许可证
 
 应用代码采用 [MIT License](LICENSE)。国家参考数据遵循 ODbL 1.0，Media3 及其他依赖保留各自的许可证；详见 [第三方说明](THIRD_PARTY_NOTICES.md)。MIT 不授予电台广播内容或第三方数据的权利。
 
-LINUX DO Community
-Thanks to the Linux.do community for its support and contributions.
