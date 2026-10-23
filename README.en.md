@@ -10,13 +10,13 @@ Station listings come from [Radio Browser](https://www.radio-browser.info/). Aud
 
 **Android 8.0+ · Java 17 · Media3 ExoPlayer · MIT**
 
-[Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Third-party notices](THIRD_PARTY_NOTICES.md) · [License](LICENSE)
+[Releases](https://github.com/a616567126/WanderRadio/releases) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Third-party notices](THIRD_PARTY_NOTICES.md) · [License](LICENSE)
 
 Inspired by [RoamDial](https://roamdial.com/). This is an independent implementation with no affiliation to RoamDial. The supporting documents linked above are currently in Chinese; the app interface is also currently in Chinese.
 
 ## Project status
 
-Current version: `0.1.5`. This is an early-stage Android project.
+Current version: `0.1.6`. This is an early-stage Android project.
 
 APK builds, Android lint, and core checks for catalogue parsing, search, and cache serialization have passed. MP3/HLS playback, three consecutive pause/resume cycles, and a complete catalogue download were verified on an OPPO PKV110. That catalogue snapshot contained 69,408 stations worldwide, including 2,441 in China, and included stations marked as broken. Counts are not fixed. Lock-screen controls, extended background playback, and manufacturer-specific behavior need further testing.
 
@@ -245,6 +245,17 @@ The core suite runs 18 checks without a catalogue file. To run two additional pa
 java -cp "$TEST_CLASSPATH" com.wanderadio.app.CoreTest /absolute/path/to/catalog.json
 ```
 
+Version 0.1.6 passed the rendering regression on an OPPO PKV110. Three consecutive Next Station actions also displayed the active station highlight.
+
+The rendering regression runs on a connected Android device. It covers the active station beyond the background dot limit, list refreshes, an empty list, nebula mode, and missing coordinates:
+
+```bash
+./gradlew assembleDebug assembleDebugAndroidTest
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+adb shell am instrument -w com.wanderadio.app.test/com.wanderadio.app.AtlasHighlightInstrumentation
+```
+
 Data checks do not replace audio testing. Version 0.1.4 was tested on an OPPO PKV110 for live playback and three consecutive pause/resume cycles. Headphone switching, lock-screen controls, prolonged background playback, and sleep timing need separate acceptance tests.
 
 ## Data and privacy
@@ -264,7 +275,7 @@ Data checks do not replace audio testing. Version 0.1.4 was tested on an OPPO PK
 - Genres are broad classifications derived from community tags.
 - Bitrate, codec, and location metadata depend on the catalogue. Unknown bitrates are not estimated.
 - Some streams are unavailable, geographically restricted, or use unsupported codecs. A complete directory does not guarantee playback of every station.
-- The globe limits simultaneously drawn dots for responsiveness. Lists, geographic filters, and search use all loaded entries.
+- The globe limits background dots for responsiveness. The current station is highlighted in an independent overlay outside this limit. Lists, geographic filters, and search use all loaded entries.
 - Cached listings support offline browsing, not offline audio playback.
 - Song recognition, lyrics, audio spectrum visualization, cross-device synchronization, widgets, and radio alarms are not implemented.
 - The project does not use RoamDial's private services or promise feature or visual parity with that site.

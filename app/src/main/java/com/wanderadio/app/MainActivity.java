@@ -156,7 +156,7 @@ public final class MainActivity extends Activity {
     private void refreshPlayer() {
         if(radio==null)return;Station s=radio.station;
         status.setText((radio.playing?"● ":radio.buffering?"◌ ":"○ ")+radio.status);
-        if(s!=null){title.setText(s.name);location.setText(s.location()+" · "+s.quality());quality.setText(s.quality());save.setText(library.favorites.containsKey(s.id)?"♥ 已收藏":"♡ 收藏");atlas.setSelected(s.id);
+        if(s!=null){title.setText(s.name);location.setText(s.location()+" · "+s.quality());quality.setText(s.quality());save.setText(library.favorites.containsKey(s.id)?"♥ 已收藏":"♡ 收藏");atlas.setSelected(s);
             atlas.setSignalState(radio.playing,radio.buffering);
             if(!s.id.equals(focusedStation)) {
                 focusedStation=s.id;
@@ -393,7 +393,7 @@ public final class MainActivity extends Activity {
         });
     }
     private void about() {
-        Sheet sheet=new Sheet("漫听 · 0.1.5","把下一站，交给声音。");
+        Sheet sheet=new Sheet("漫听 · 0.1.6","把下一站，交给声音。");
         ScrollView scroll=new ScrollView(this);
         TextView description=text("独立原生电台客户端，灵感来自 RoamDial，与原站无隶属关系。\n\n电台目录来自 Radio Browser，分页加载全球全量目录，包含失效标记的电台；音频直连电台服务器，部分线路可能失效或限制地区访问。\n\n位置分为目录坐标、地区范围、国家范围。近似位置仅用于地图探索，不代表发射台地址；国家参考数据来自 mledoze/countries，按 ODbL 提供。\n\n收藏和最近收听保存在本机，无账号、无分析埋点，不申请定位或麦克风权限。电台直播本身可能包含广告，部分线路使用 HTTP。",13,INK);
         description.setLineSpacing(dp(4),1);scroll.addView(description);

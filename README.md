@@ -10,13 +10,13 @@
 
 **Android 8.0+ · Java 17 · Media3 ExoPlayer · MIT**
 
-[更新记录](CHANGELOG.md) · [参与贡献](CONTRIBUTING.md) · [第三方说明](THIRD_PARTY_NOTICES.md) · [许可证](LICENSE)
+[下载与版本](https://github.com/a616567126/WanderRadio/releases) · [更新记录](CHANGELOG.md) · [参与贡献](CONTRIBUTING.md) · [第三方说明](THIRD_PARTY_NOTICES.md) · [许可证](LICENSE)
 
 本项目的交互灵感来自 [RoamDial](https://roamdial.com/)，为独立实现，与 RoamDial 无隶属关系。
 
 ## 项目状态
 
-当前版本：`0.1.5`，处于早期开发阶段，仅支持 Android。
+当前版本：`0.1.6`，处于早期开发阶段，仅支持 Android。
 
 已完成 APK 编译和静态检查，以及目录解析、搜索、缓存数据序列化等核心数据逻辑检查。已在 OPPO PKV110 上验证 MP3/HLS 直播、连续 3 次暂停后恢复播放，以及一次全量目录加载（69,408 台，其中中国 2,441 台；数量为测试时快照，包含失效标记）；锁屏控制、长时间后台运行和不同厂商策略仍需进一步验证。
 
@@ -241,6 +241,17 @@ java -cp "$TEST_CLASSPATH" com.wanderadio.app.GeographyIndexTest
 java -cp "$TEST_CLASSPATH" com.wanderadio.app.CoreTest /absolute/path/to/catalog.json
 ```
 
+0.1.6 已在 OPPO PKV110 上通过高亮绘制回归，并验证连续 3 次“下一站”均显示当前频道高亮。
+
+高亮绘制回归需要已连接的 Android 设备，覆盖背景点数量上限之外的当前电台、列表刷新、空列表、星云与缺失坐标：
+
+```bash
+./gradlew assembleDebug assembleDebugAndroidTest
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+adb shell am instrument -w com.wanderadio.app.test/com.wanderadio.app.AtlasHighlightInstrumentation
+```
+
 数据与相机检查不替代音频验收。0.1.4 已在 OPPO PKV110 上验证直播和连续 3 次暂停后恢复播放；耳机切换、锁屏、长时间后台持续运行和睡眠定时仍需分别验收。
 
 ## 数据与隐私
@@ -260,7 +271,7 @@ java -cp "$TEST_CLASSPATH" com.wanderadio.app.CoreTest /absolute/path/to/catalog
 - 流派根据目录标签粗略分类，不属于专业音乐分类结果。
 - 码率、编码和地理信息依赖电台目录提供的数据；未知码率不会显示为推算值。
 - 完整目录包含上游标记失效的电台；部分电台可能失效、限制地域访问，或使用设备不支持的编码。
-- 全球地图为保证交互流畅限制同时绘制的点数；频道列表、地区筛选和搜索使用全部已加载记录。
+- 全球地图为保证交互流畅限制背景点的绘制数量；当前频道独立绘制高亮，不受该数量限制。频道列表、地区筛选和搜索使用全部已加载记录。
 - 本地目录缓存仅用于浏览目录，不提供离线音频收听。
 - 当前没有歌曲识别、歌词、音频频谱、跨设备同步、桌面组件或电台闹钟。
 - 本项目没有接入 RoamDial 的私有服务，也不承诺与原站所有功能或界面完全一致。

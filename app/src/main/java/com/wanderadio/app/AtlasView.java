@@ -16,9 +16,9 @@ public final class AtlasView extends View {
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Path grid = new Path();
     private final float[] projected = new float[3];
-    private final float[][] hits = new float[3000][2];
+    private final float[][] hits = new float[3001][2];
     private final float[][] nebulaPoints = new float[3000][2];
-    private final Station[] hitStations = new Station[3000];
+    private final Station[] hitStations = new Station[3001];
     private final float[][] stars = new float[100][3];
     private int hitCount;
     private Shader background;
@@ -30,6 +30,9 @@ public final class AtlasView extends View {
     private final List<LocationResolver.Location> displayLocations = new ArrayList<>();
     public Consumer<Station> onSelect;
     private String selected = "", signalStatus = "未调谐";
+    private Station selectedStation;
+    private LocationResolver.Location selectedLocation;
+    private float selectedNebulaX, selectedNebulaY;
     private boolean nebula;
     private float yaw = -.5f, pitch, zoom = 1.25f, anchor = .5f;
     private float downX, downY, lastX, lastY;
@@ -85,12 +88,20 @@ public final class AtlasView extends View {
 
     public void setCatalogue(List<Station> values) {
         locations.setCatalogue(values);
+        if(selectedStation!=null)selectedLocation=locations.resolve(selectedStation);
         setStations(stations);
     }
 
     public String locationLabel(Station station) { return locations.resolve(station).label(); }
 
-    public void setSelected(String id) { selected = id; invalidate(); }
+    public void setSelected(Station station) {
+        selected=station.id;selectedStation=station;selectedLocation=locations.resolve(station);
+        Random random=new Random(station.id.hashCode());
+        double angle=genre(station.tags)*Math.PI*2/8;
+        selectedNebulaX=(float)Math.cos(angle)*.27f+(float)random.nextGaussian()*.063f;
+        selectedNebulaY=(float)Math.sin(angle)*.29f+(float)random.nextGaussian()*.063f;
+        invalidate();
+    }
 
     public void setSignalState(boolean playing, boolean buffering) {
         signalStatus = buffering ? "调谐中" : playing ? "已锁定" : "已暂停";
@@ -100,9 +111,10 @@ public final class AtlasView extends View {
     public void setNebula(boolean value) { stopFlight(); nebula = value; invalidate(); }
 
     public boolean focusStation(Station station) {
-        LocationResolver.Location location=locations.resolve(station);
+        setSelected(station);
+        LocationResolver.Location location=selectedLocation;
         if (!location.available()) return false;
-        selected=station.id;nebula=false;
+        nebula=false;
         float magnification=location.precision==LocationResolver.Precision.STATION?7.5f:
             location.precision==LocationResolver.Precision.REGION?5f:3.2f;
         fly(location.latitude,location.longitude,magnification,.32f);
@@ -172,10 +184,9 @@ public final class AtlasView extends View {
             paint.setStyle(Paint.Style.FILL);
         }
         hitCount = 0;
-        Station locked = null;
-        float selectedX = 0, selectedY = 0;
         for (int i = 0; i < Math.min(stations.size(), 3000); i++) {
             Station station = stations.get(i);
+            if(station.id.equals(selected))continue;
             float x, y, depth;
             if (nebula) {
                 x = width / 2 + nebulaPoints[i][0] * width;
@@ -188,15 +199,27 @@ public final class AtlasView extends View {
                 if (depth < 0) continue;
             }
             if (x < -dp(35) || x > width + dp(35) || y < -dp(35) || y > height + dp(35)) continue;
-            boolean active = station.id.equals(selected);
-            paint.setColor(active ? 0xffefd6ae : 0xff83a496);
-            paint.setAlpha(active ? 255 : (int) (45 + 95 * depth));
-            canvas.drawCircle(x, y, dp(active ? 5f : 2.2f), paint);
-            if (active) { locked = station; selectedX = x; selectedY = y; }
+            paint.setColor(0xff83a496);
+            paint.setAlpha((int)(45+95*depth));
+            canvas.drawCircle(x,y,dp(2.2f),paint);
             hits[hitCount][0] = x; hits[hitCount][1] = y; hitStations[hitCount] = station; hitCount++;
         }
         paint.setAlpha(255);
-        if (locked != null) drawSignal(canvas, locked, selectedX, selectedY);
+        // The active station is an independent overlay, even outside the 3,000 background dots.
+        if(selectedStation!=null && selectedLocation!=null && (nebula || selectedLocation.available())) {
+            float x,y,depth;
+            if(nebula) {
+                x=width/2+selectedNebulaX*width;y=height/2+selectedNebulaY*height;depth=1;
+            } else {
+                project(selectedLocation.latitude,selectedLocation.longitude,radius);
+                x=projected[0];y=projected[1];depth=projected[2];
+            }
+            if(depth>=0 && x>=-dp(35) && x<=width+dp(35) && y>=-dp(35) && y<=height+dp(35)) {
+                paint.setColor(0xffefd6ae);canvas.drawCircle(x,y,dp(5),paint);
+                drawSignal(canvas,selectedStation,x,y);
+                hits[hitCount][0]=x;hits[hitCount][1]=y;hitStations[hitCount]=selectedStation;hitCount++;
+            }
+        }
         paint.setColor(0xff88a094); paint.setTypeface(Typeface.DEFAULT); paint.setTextSize(sp(10));
         canvas.drawText(nebula ? "流派星云 · 轻点频道调谐" : "拖动探索  /  双指缩放", dp(12), height - dp(10), paint);
         if (stations.isEmpty()) {
